@@ -9,6 +9,7 @@ Python and Lua code that utilizes Machine Learning to autonomously learn to play
 UDP or TCP connection between Lua and Python
 
 Emulator - Lua Console - Raw Data <=> Raw Data - AI - Adaptation
+
       (A,B,up,down,left,right) <- <=> -> Sprite Data
 
 ##Engine
