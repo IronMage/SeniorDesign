@@ -197,17 +197,17 @@ class TestFuzzySets(unittest.TestCase):
 
     def testFuzzySetWrapper(self):
         print("\nTESTING FUZZY SET WRAPPER")
-        fz = FuzzySets()
+        fz = FuzzySets()                                                        #Make an empty set to fill
 
-        t1 = TrapazoidalGraph(3, 0, 2, 4, 6, 4, 6, 6, 8, 6, 8, 10, 12)
+        t1 = TrapazoidalGraph(3, 0, 2, 4, 6, 4, 6, 6, 8, 6, 8, 10, 12)          #Create a couple sets for the  container
         t2 = TriangularGraph(3, 0, 4, 2, 10, 8, 12)
 
-        fz.addSet(t1, "DISTANCE")
-        self.assertEqual(t1.getOwnership(9), fz.getSets()[0].getOwnership(9))
-        self.assertTrue(fz.exists("DISTANCE"))
-        self.assertFalse(fz.exists("HEALTH"))
+        fz.addSet(t1, "DISTANCE")                                               #Add the first set
+        self.assertEqual(t1.getOwnership(9), fz.getSets()[0].getOwnership(9))   #Make sure the first set and the index of the first set of the container are the same
+        self.assertTrue(fz.exists("DISTANCE"))                                  #Check that the container can recognize the name of the set
+        self.assertFalse(fz.exists("HEALTH"))                                   #Check that the container doesn't return false positives.
 
-        fz.addSet(t2, "LIFE")
+        fz.addSet(t2, "LIFE")                                                   #Rinse, repeat.
         self.assertEqual(t1.getOwnership(9), fz.getSets()[0].getOwnership(9))
         self.assertEqual(t2.getOwnership(9), fz.getSets()[1].getOwnership(9))
         self.assertTrue(fz.exists("LIFE"))
