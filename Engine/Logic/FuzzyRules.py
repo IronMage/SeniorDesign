@@ -1,6 +1,6 @@
 from FuzzySet import *
 import unittest
-class Rule:
+class FuzzyRule:
     def __init__(self, ruleFunction, requiredInputs, requiredOutputs):
         self.function = ruleFunction
         self.inputs = requiredInputs
@@ -19,13 +19,13 @@ class Rule:
             else:
                 raise ValueError("Required output set " + str(s) + " does not exist in the current master output set.")
 
-class RuleSet:
+class FuzzyRuleSet:
     def __init__(self, inputSets, outputSets):
         self.rules = []
         self.inputs = inputSets
         self.outputs = outputSets
     def addRule(self, newRule):
-        if(isinstance(newRule, Rule)):
+        if(isinstance(newRule, FuzzyRule)):
             self.rules.append(newRule)
         else:
             raise ValueError("Trying to add a new rule with incorrect typing." + str(type(newRule)))
@@ -66,7 +66,7 @@ def testingOutputSetCreation():
 class TestFuzzyRules(unittest.TestCase):
     def testRule(self):
         print("\nTESTING FUZZY RULES")
-        r1 = Rule(testingRuleFunction, ["IN1", "IN2"], ["O1"])  #Create a rule
+        r1 = FuzzyRule(testingRuleFunction, ["IN1", "IN2"], ["O1"])  #Create a rule
         inSet = FuzzySets()                                     #Empty set
         outSet = FuzzySets()
 
@@ -79,18 +79,18 @@ class TestFuzzyRules(unittest.TestCase):
 
         self.assertTrue(r1.runRule())
 
-    def testRuleSet(self):       
+    def testFuzzyRuleSet(self):       
         print("\nTESTING FUZZY RULES WRAPPER") 
         inSet = testingInputSetCreation()                       #Get the actual testing set
         outSet = testingOutputSetCreation()
 
-        fzRules = RuleSet(inSet, outSet)                        #Create a rule set
+        fzRules = FuzzyRuleSet(inSet, outSet)                        #Create a rule set
 
         t123 = 18000                                            #Create a dummy variable to check the type checking for the rule set
         with self.assertRaises(ValueError):
             fzRules.addRule(t123)
 
-        r1 = Rule(testingRuleFunction, ["IN1", "IN2"], ["O1"])  #Create a rule
+        r1 = FuzzyRule(testingRuleFunction, ["IN1", "IN2"], ["O1"])  #Create a rule
 
         fzRules.addRule(r1)
         self.assertEqual(r1, fzRules.getRules()[0])             #Make sure the rule and the first rule of the set are the same

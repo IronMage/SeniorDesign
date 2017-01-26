@@ -91,12 +91,46 @@ class TrapazoidalGraph:
                 self.rangeOwnership[i] = 0
         return self.rangeOwnership
 
+class BarGraph:
+    #Format is just the number and value index you want to track. Example : (6, 'A', 'B', 'UP', 'DWN', 'L', 'R')
+    def __init__(self, *args):
+        self.values = []
+        self.valueOwnership = [0] * args[0]
+        self.numberOfValues = args[0]
+        if( len(args) != (1 + args[0]) ):
+            errorString = "The format for BarGraph is numberOfValues, value1, value2, value 3"
+            print(errorString)
+            infoString = "The length expected is " + str((1 + args[0])) + " the total length is " + str(len(args))
+            print(infoString)
+            for i in range(len(args)):
+                print(args[i])
+            raise ValueError("The number of arguments in BarGraph did not match expected value.")
+        for i in range(self.numberOfValues):
+            self.values.append(args[i+1])
+    def getOwnership(self,value):
+        for i in range(self.numberOfValues):
+            if(value == self.values[i]):
+                return self.valueOwnership[i]
+        print(self.values)
+        raise ValueError("The value " + str(value) + " was searched for in BarGraph but not found")
+    def addToOwnership(self, value, amount):
+        for i in range(self.numberOfValues):
+            print("Adding to " + str(value) + " checking against " + str(self.values[i]))
+            if(value == self.values[i]):
+                self.valueOwnership[i] = self.valueOwnership[i] + amount
+        print(self.values)
+        raise ValueError("The value " + str(value) + " was added to in BarGraph but not found")
+    def resetOwnership(self):
+        for i in range(self.numberOfValues):
+            self.valueOwnership[i] = 0
+
+
 class  FuzzySets:
     def __init__(self):
         self.sets = []
         self.setNames = []
     def addSet(self, newSet, setName):
-        if(isinstance(newSet, TriangularGraph) or isinstance(newSet, TrapazoidalGraph)):
+        if(isinstance(newSet, TriangularGraph) or isinstance(newSet, TrapazoidalGraph) or isinstance(newSet, BarGraph)):
             self.sets.append(newSet)
             self.setNames.append(setName)
         else:
@@ -194,6 +228,35 @@ class TestFuzzySets(unittest.TestCase):
         for i in range(11):
             result = t.getOwnership(i) #Load all of the results to be checked in a minute
             self.assertEqual(result, expectedResults[i])
+    '''
+    def testBarGraph(self):
+        print("\nTESTING BAR GRAPH")
+        b = BarGraph(3, 'A', 'B', 'START')
+
+        self.assertEqual(b.getOwnership('A'), 0)
+        self.assertEqual(b.getOwnership('B'), 0)
+        self.assertEqual(b.getOwnership('START'), 0)
+
+        with self.assertRaises(ValueError):
+            b.getOwnership('X')
+
+        b.addToOwnership('A', 15)
+        b.addToOwnership('B', 10)
+        b.addToOwnership('START', 5)
+        
+        self.assertEqual(b.getOwnership('A'), 15)
+        self.assertEqual(b.getOwnership('B'), 10)
+        self.assertEqual(b.getOwnership('START'), 5)
+
+        self.assertTrue((b.getOwnership('A')) > (b.getOwnership('B')))
+        b.resetOwnership()
+
+
+        self.assertEqual(b.getOwnership('A'), 0)
+        self.assertEqual(b.getOwnership('B'), 0)
+        self.assertEqual(b.getOwnership('START'), 0)
+
+    '''
 
     def testFuzzySetWrapper(self):
         print("\nTESTING FUZZY SET WRAPPER")
