@@ -6,10 +6,12 @@ local world = {}
 local t
 local frame = 0
 
-tcp = socket.tcp()
-tcp:setpeername(address, port)
+udp = socket.udp();
+udp:setpeername(address, port);
 
 while true do
-    entity = tostring(frame)
+    entity = tostring(frame);
+    print(entity);
+    -- udp.send(entity);
 	emu.frameadvance();
 end
