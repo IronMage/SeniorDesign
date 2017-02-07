@@ -12,7 +12,14 @@ local socket = require("socket")
 local ip = assert(socket.dns.toip(host))
 -- create a new UDP object
 local udp = assert(socket.udp())
--- contact daytime host
-assert(udp:sendto("anything", ip, port))
--- retrieve the answer and print results
-io.write(assert(udp:receive()))
+
+while 1 do
+    -- contact daytime host
+    -- assert(udp:sendto("anything", ip, port))
+    io.write('\nEnter message: \n')
+    local msg = io.read()
+    io.write('Sending \'', msg, '\' to server\n')
+    assert(udp:sendto(msg, ip, port))
+    -- retrieve the answer and print results
+    io.write(assert(udp:receive()))
+end
