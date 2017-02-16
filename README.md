@@ -8,11 +8,11 @@ Python and Lua code that utilizes Machine Learning to autonomously learn to play
 
 TCP connection between a Lua client and a Python server
 
-###/Logic/LuaTCPClient.lua
+###LuaTCPClient.lua
 
 The Lua TCP Client that will send game info to the python TCP Server
 
-###/Logic/PythonTCPServer.py
+###PythonTCPServer.py
 
 The Python TCP Server that will take the game info from the Lua TCP Client, compute the move to make, and send the buttons to be pressed back to the Lua TCP Client
 
