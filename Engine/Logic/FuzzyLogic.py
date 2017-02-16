@@ -3,9 +3,9 @@ from FuzzyRules import *
 
 class FuzzyLogic:
     def __init__(self):
-        self.inputSet = FuzzySet()
-        self.outputSet = FuzzySet()
-        self.ruleSet = FuzzyRuleSet()
+        self.inputSet = FuzzySets()
+        self.outputSet = FuzzySets()
+        self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
         #self.fuzzifier = Fuzzifier()
         #sel.defuzzifier = Defuzzifier()
     

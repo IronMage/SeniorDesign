@@ -111,15 +111,16 @@ class BarGraph:
         for i in range(self.numberOfValues):
             if(value == self.values[i]):
                 return self.valueOwnership[i]
-        print(self.values)
+        #print(self.values)
         raise ValueError("The value " + str(value) + " was searched for in BarGraph but not found")
     def addToOwnership(self, value, amount):
         for i in range(self.numberOfValues):
-            print("Adding to " + str(value) + " checking against " + str(self.values[i]))
+            #print("Adding to '" + str(value) + "' checking against '" + str(self.values[i]) + "'")
             if(value == self.values[i]):
                 self.valueOwnership[i] = self.valueOwnership[i] + amount
-        print(self.values)
-        raise ValueError("The value " + str(value) + " was added to in BarGraph but not found")
+                return
+        #print(self.values)
+        raise ValueError("The value '" + str(value) + "' was added to in BarGraph but not found")
     def resetOwnership(self):
         for i in range(self.numberOfValues):
             self.valueOwnership[i] = 0
@@ -228,7 +229,7 @@ class TestFuzzySets(unittest.TestCase):
         for i in range(11):
             result = t.getOwnership(i) #Load all of the results to be checked in a minute
             self.assertEqual(result, expectedResults[i])
-    '''
+
     def testBarGraph(self):
         print("\nTESTING BAR GRAPH")
         b = BarGraph(3, 'A', 'B', 'START')
@@ -256,7 +257,7 @@ class TestFuzzySets(unittest.TestCase):
         self.assertEqual(b.getOwnership('B'), 0)
         self.assertEqual(b.getOwnership('START'), 0)
 
-    '''
+
 
     def testFuzzySetWrapper(self):
         print("\nTESTING FUZZY SET WRAPPER")

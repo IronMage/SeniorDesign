@@ -182,6 +182,7 @@ function getInputs()
                     inputs[#inputs] = -1
                 end
             end
+            
         end
     end
     
@@ -199,7 +200,7 @@ function newInnovation()
     pool.innovation = pool.innovation + 1
     return pool.innovation
 end
-
+ 
 function newPool()
     local pool = {}
     pool.species = {}
