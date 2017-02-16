@@ -4,6 +4,9 @@
 --which returns the button to be pressed
 
 
+-- Message contains number of enemies, followed by the x y pairs for each enemy
+
+
 -- change here to the host an port you want to contact
 local host, port = "localhost", 10000
 -- load namespace
