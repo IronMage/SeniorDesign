@@ -143,6 +143,13 @@ class  FuzzySets:
             if(n == name):
                 return True
         return False
+    def getOwnership(self, setName, inputValue):
+        i = 0;
+        for n in self.setNames:
+            if(n == setName):
+                return self.sets[i].getOwnership(inputValue)
+            i = i + 1
+        raise ValueError("Trying to getOwnership from FuzzySets where no set exists")
 
 
 class TestFuzzySets(unittest.TestCase):

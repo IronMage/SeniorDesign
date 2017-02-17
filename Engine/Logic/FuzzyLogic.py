@@ -1,6 +1,9 @@
 import unittest
 from FuzzyRules import *
 
+def distRule():
+    
+
 class FuzzyLogic:
     def __init__(self):
         self.inputSet = FuzzySets()
@@ -10,16 +13,17 @@ class FuzzyLogic:
         #sel.defuzzifier = Defuzzifier()
     
     def setUpInputs(self):
-        #Insert input set creation here
-        print("in")
+        dx = TrapaziodalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
+        dy = TrapaziodalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
+        self.inputSet.addSet(dx, "DX")
+        self.inputSet.addSet(dy, "DY")
 
     def setUpOutputs(self):
-        #Insert output set creation here
-        print("out")
+        controller = BarGraph(6, "A", "B", "UP", "DOWN", "LEFT", "RIGHT")
+        self.outputSet.addSet(controller, "CONTROLLER")
 
     def setUpRules(self):
-        #Insert rules creation here
-        print("rule")
+        distRule = FuzzyRule(["DX", "DY"], ["CONTROLLER"])
 
     def run(self):
         #self.fuzzifier.getInput(inputSet)
