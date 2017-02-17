@@ -42,6 +42,8 @@ class TriangularGraph:
             else:
                 self.rangeOwnership[i] = 0
         return self.rangeOwnership
+    def getResults(self):
+        return self.rangeOwnership
 
 class TrapazoidalGraph:
     #            self, numberOfRanges, rangeStart, plateauStart , plateauEnd, rangeEnd, etc.
@@ -90,6 +92,8 @@ class TrapazoidalGraph:
             else:
                 self.rangeOwnership[i] = 0
         return self.rangeOwnership
+    def getResults(self):
+        return self.rangeOwnership
 
 class BarGraph:
     #Format is just the number and value index you want to track. Example : (6, 'A', 'B', 'UP', 'DWN', 'L', 'R')
@@ -124,6 +128,8 @@ class BarGraph:
     def resetOwnership(self):
         for i in range(self.numberOfValues):
             self.valueOwnership[i] = 0
+    def getResults(self):
+        return self.valueOwnership
 
 
 class  FuzzySets:
@@ -143,13 +149,27 @@ class  FuzzySets:
             if(n == name):
                 return True
         return False
-    def getOwnership(self, setName, inputValue):
+    def getOwnership(self, setName, value):
         i = 0;
         for n in self.setNames:
             if(n == setName):
-                return self.sets[i].getOwnership(inputValue)
+                return self.sets[i].getOwnership(value)
             i = i + 1
         raise ValueError("Trying to getOwnership from FuzzySets where no set exists")
+    def getResults(self, setName):
+        i = 0;
+        for n in self.setNames:
+            if(n == setName):
+                return self.sets[i].getResults()
+            i = i + 1
+        raise ValueError("Trying to getResults from FuzzySets where no set exists")
+    def addToOwnership(self, setName, value, amount):
+        i = 0;
+        for n in self.setNames:
+            if(n == setName and isinstance(self.sets[i], BarGraph)):
+                return self.sets[i].addToOwnership(value, amount)
+            i = i + 1
+        raise ValueError("Trying to addToOwnership from FuzzySets where no set exists")
 
 
 class TestFuzzySets(unittest.TestCase):

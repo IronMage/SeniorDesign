@@ -5,8 +5,8 @@ class FuzzyRule:
         self.function = ruleFunction
         self.inputs = requiredInputs
         self.outputs = requiredOutputs
-    def runRule(self):
-        return self.function()
+    def runRule(self, inputSets, outputSets):
+        return self.function(inputSets, outputSets)
     def checkRule(self, inputSets, outputSets):
         for s in self.inputs:
             if(inputSets.exists(s)):
@@ -34,13 +34,13 @@ class FuzzyRuleSet:
     def runRules(self):
         for r in self.rules:
             r.checkRule(self.inputs, self.outputs)
-            r.runRule()
+            r.runRule(self.inputs, self.outputs)
     def checkRules(self):
         for r in self.rules:
             r.checkRule(self.inputs, self.outputs)
 
 
-def testingRuleFunction():
+def testingRuleFunction(inputSets, outputSets):
     #print("Entered testingRuleFunction")
     return True
 
@@ -77,7 +77,7 @@ class TestFuzzyRules(unittest.TestCase):
         outSet = testingOutputSetCreation()
         r1.checkRule(inSet, outSet)                             #Check to make sure everything worked
 
-        self.assertTrue(r1.runRule())
+        self.assertTrue(r1.runRule(inSet, outSet))
 
     def testFuzzyRuleSet(self):       
         print("\nTESTING FUZZY RULES WRAPPER") 
