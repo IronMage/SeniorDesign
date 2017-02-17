@@ -4,6 +4,14 @@ LET'S PLAY WITH MACHINE LEARNING
 
 Python and Lua code that utilizes Machine Learning to autonomously learn to play NES games
 
+##Bizhawk
+
+Contains all folders and files needed for emulation with Bizhawk, including FUZZYevolve.lua and SMW1.state
+
+###FUZZYevolve.lua
+
+The main lua file to be loaded into the Bizhawk emulator. This file will extract the game information, send it out using TCP to the python server with the format of number of enemies followed by x y pairs for each enemy, the python server will return the buttons to be pressed, and those buttons will be set on the game controller.
+
 ##Communication
 
 TCP connection between a Lua client and a Python server
