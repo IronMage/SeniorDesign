@@ -130,6 +130,8 @@ class BarGraph:
             self.valueOwnership[i] = 0
     def getResults(self):
         return self.valueOwnership
+    def getNames(self):
+        return self.values
 
 
 class  FuzzySets:
@@ -170,6 +172,13 @@ class  FuzzySets:
                 return self.sets[i].addToOwnership(value, amount)
             i = i + 1
         raise ValueError("Trying to addToOwnership from FuzzySets where no set exists")
+    def getNames(self, setName):
+        i = 0;
+        for n in self.setNames:
+            if(n == setName and isinstance(self.sets[i], BarGraph)):
+                return self.sets[i].getNames()
+            i = i + 1
+        raise ValueError("Trying to getNames from FuzzySets where no set exists")
 
 
 class TestFuzzySets(unittest.TestCase):

@@ -1,5 +1,6 @@
 import unittest
 from FuzzyRules import *
+from Defuzzifier import *
 
 def distRule(inputSet, outputSet):
     xRange = inputSet.getResults("DX")
@@ -13,18 +14,13 @@ def distRule(inputSet, outputSet):
     outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1] * 10)
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2] * 10)
 
-    #p = ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"]
-    #print(p)
-    #print(outputSet.getResults("CONTROLLER"))
-
-
 class FuzzyLogic:
     def __init__(self):
         self.inputSet = FuzzySets()
         self.outputSet = FuzzySets()
         self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
-        #self.fuzzifier = Fuzzifier()
-        #sel.defuzzifier = Defuzzifier()
+        #self.fuzzifier = Fuzzifier(self.inputSet)
+        self.defuzzifier = Defuzzifier(self.outputSet)
     
     def setUpInputs(self):
         dx = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
@@ -47,7 +43,7 @@ class FuzzyLogic:
     def run(self):
         #self.fuzzifier.getInput(inputSet)
         self.ruleSet.runRules()
-        #self.fuzzifier.doOutput(outputSet)
+        self.defuzzifier.selectOutput()
 
 class TestFuzzyLogic(unittest.TestCase):
     def testFuzzyLogic(self):       
