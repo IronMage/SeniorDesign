@@ -13,7 +13,7 @@ def distRule(inputSet, outputSet):
     outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1] * 10)
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2] * 10)
 
-    p = ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"]
+    #p = ["A", "B", "UP", "DOWN", "LEFT", "RIGHT"]
     #print(p)
     #print(outputSet.getResults("CONTROLLER"))
 
