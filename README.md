@@ -18,7 +18,7 @@ TCP connection between a Lua client and a Python server.
 
 Emulator - Lua Console - Raw Data <=> Raw Data - AI - Adaptation
 
-    (A,B,up,down,left,right) <- <=> -> Sprite Data (#enemies followed by x y pairs for each enemy)
+    (A,B,up,down,left,right) <- <=> -> Sprite Data (#enemies followed by x y pairs for each enemy, space delimited)
 
 ###LuaTCPClient.lua
 
@@ -30,6 +30,8 @@ The simple Python TCP Server that will respond to the Lua TCP Client.
 
 ##Engine
 
+The fuzzy logic is embedded within this folder.
+
 ###/Logic/FuzzyRules.py
 
 Rules class.
@@ -39,3 +41,7 @@ Rules class.
 Produces Triangular and Trapezoidal graphs.
 
 ##Main
+
+###main.py
+
+Used for program entry.
