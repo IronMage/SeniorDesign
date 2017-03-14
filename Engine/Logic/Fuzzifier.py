@@ -11,7 +11,6 @@ from FuzzySet import *
 class Fuzzifier:
     def __init__(self, inputSet):
         self.inputSet = inputSet
-        self.currentEnemy = 0
         self.currentMessage = {}
         self.marioX = 0
         self.marioY = 0
@@ -21,7 +20,6 @@ class Fuzzifier:
         self.currentMessage = message.split(",")
         self.marioX = int(self.currentMessage[0])
         self.marioY = int(self.currentMessage[1])
-        self.currentEnemy = 0
 
         return int(self.currentMessage[2])
 
@@ -31,7 +29,8 @@ class Fuzzifier:
             enemyY = int(self.currentMessage[self.enemyCoordinateStart + (2 * coordinatePair) + 1])
             dx = self.marioX - enemyX
             dy = self.marioY - enemyY
-            distance = math.sqrt(math.pow(dx, 2) + math.pow(dy, 2))
+            self.inputSet.getOwnership("DX", dx)
+            self.inputSet.getOwnership("DY", dy)
         else:
             raise ValueError("DX and DY do not exist in the supplied input set")
 
