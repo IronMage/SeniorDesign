@@ -1,6 +1,7 @@
 import unittest
 from FuzzyRules import *
 from Defuzzifier import *
+from Fuzzifier import *
 
 def distRule(inputSet, outputSet):
     xRange = inputSet.getResults("DX")
@@ -19,7 +20,7 @@ class FuzzyLogic:
         self.inputSet = FuzzySets()
         self.outputSet = FuzzySets()
         self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
-        #self.fuzzifier = Fuzzifier(self.inputSet)
+        self.fuzzifier = Fuzzifier(self.inputSet)
         self.defuzzifier = Defuzzifier(self.outputSet)
     
     def setUpInputs(self):
@@ -40,10 +41,15 @@ class FuzzyLogic:
         self.inputSet.getOwnership("DX", 1)
         self.inputSet.getOwnership("DY", 30)
 
-    def run(self):
-        #self.fuzzifier.getInput(inputSet)
-        self.ruleSet.runRules()
-        self.defuzzifier.selectOutput()
+    def run(self, message):
+        numEnemies = self.fuzzifier.parseMessage(message)
+        for x in range(numEnemies):
+            self.fuzzifier.getInput(x)
+            self.ruleSet.runRules()
+        selectedOutput = self.defuzzifier.selectOutput()
+        self.outputSet.clearOwnership("CONTROLLER")
+        return selectedOutput
+
 
 class TestFuzzyLogic(unittest.TestCase):
     def testFuzzyLogic(self):       
@@ -54,7 +60,9 @@ class TestFuzzyLogic(unittest.TestCase):
 
         fz.testingFunction()
 
-        fz.run()
+        message = "2,3,4,12,-3,4,-5,-1,9,6,2"
+
+        fz.run(message)
 
 if __name__ == '__main__':
     unittest.main()
