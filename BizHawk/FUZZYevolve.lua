@@ -31,14 +31,14 @@ function sendGameInfo(msg)
     -- Used for sending the game info to the python Server
     -- Message format will be number of enemies followed by the x y pair for each enemy
 
-    print("Sending: " .. msg)
+    -- print("Sending: " .. msg)
     client:send(msg .. '\n')
-    print("Receiving from server")
+    -- print("Receiving from server")
     local line, err = client:receive()
 
     -- if there was no error
     if not err then 
-        console.writeline("Server replied: " .. line)
+        -- console.writeline("Server replied: " .. line)
         return line
     else  -- if there was an error
         console.writeline("Error in receiving from TCP server")
@@ -112,28 +112,28 @@ ip, port = client:getsockname()
 
 message = "message 1 10 20"
 
-while true do
+-- while true do
     setupRun()
-    console.log("Finished run setup")
+    -- console.log("Finished run setup")
     for i = 1,1000,1 do
-        console.log("Current Frame: " .. currentFrame)
+        -- console.log("Current Frame: " .. currentFrame)
         msgReturned = sendGameInfo(message)
-        console.log("Returned: " .. msgReturned)
+        -- console.log("Returned: " .. msgReturned)
         if msgReturned == "RIGHT" then
-            console.log("RIGHT Returned")
+            -- console.log("RIGHT Returned")
             for b = 1,#ButtonNames do
-                if ButtonNames[b] == "RIGHT" then
+                if ButtonNames[b] == "Right" then
                     controller["P1 " .. ButtonNames[b]] = true
                 else
                     controller["P1 " .. ButtonNames[b]] = false
                 end
             end
-        end
         joypad.set(controller)
         emu.frameadvance();
         currentFrame = currentFrame + 1
+        end
     end
-end
+-- end
 
 -- Gracefully handle unexpected exit
 event.onexit(onExit)
