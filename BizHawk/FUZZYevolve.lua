@@ -24,9 +24,39 @@ end
 
 -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
 function getGameInfo()
+    -- get marioX and marioY
     marioX = memory.read_s16_le(0x94)
     marioY = memory.read_s16_le(0x96)
     retMessage = marioX .. ',' .. marioY
+
+    -- get number of enemies
+    local sprites = {}
+    for slot=0,11 do
+        local status = memory.readbyte(0x14C8+slot)
+        if status ~= 0 then
+            spritex = memory.readbyte(0xE4+slot) + memory.readbyte(0x14E0+slot)*256
+            spritey = memory.readbyte(0xD8+slot) + memory.readbyte(0x14D4+slot)*256
+            sprites[#sprites+1] = {["x"]=spritex, ["y"]=spritey}
+        end
+    end
+    local extended = {}
+    for slot=0,11 do
+        local number = memory.readbyte(0x170B+slot)
+        if number ~= 0 then
+            spritex = memory.readbyte(0x171F+slot) + memory.readbyte(0x1733+slot)*256
+            spritey = memory.readbyte(0x1715+slot) + memory.readbyte(0x1729+slot)*256
+            extended[#extended+1] = {["x"]=spritex, ["y"]=spritey}
+        end
+    end
+    retMessage = retMessage .. ',' .. (table.getn(sprites) + table.getn(extended))
+
+    for key, value in ipairs(sprites) do
+        retMessage = retMessage .. ',' .. value["x"] .. ',' .. value["y"]
+    end
+    for key, value in ipairs(extended) do
+        retMessage = retMessage .. ',' .. value["x"] .. ',' .. value["y"]
+    end
+
     return retMessage
 end 
 
@@ -133,8 +163,7 @@ client = socket.try(socket.connect("127.0.0.1", 9994))
 -- find out which port the OS chose for us
 ip, port = client:getsockname()
 
-message = ""
-
+-- run the algorithm on the game
 while true do
     -- initialize a new run
     setupRun()
@@ -151,6 +180,7 @@ while true do
         pushButton(msgReturned)
         -- advance the screen frame
         emu.frameadvance();
+        -- keep track of the number of frames advanced through
         currentFrame = currentFrame + 1
     end
 end

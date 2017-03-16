@@ -8,6 +8,8 @@ from Server import *
 def Main():
     #initialize server, will wait until connection is made from FUZZYevolve client
     Server = server()
+    #instatiate FuzzyLogic class
+    fz = FuzzyLogic()
     #intialize gameInfo
     gameInfo = ""
     #initialize buttonToPress
@@ -17,6 +19,7 @@ def Main():
         #receive the game info from the FUZZYevolve client
         gameInfo = Server.receive()
         #send gameInfo to FUZZYevolve, assigning the returned button to buttonToPress
+        fz = FuzzyLogic()
         #send buttonToPress back to FUZZYevolve client
         Server.send("RIGHT")
      
