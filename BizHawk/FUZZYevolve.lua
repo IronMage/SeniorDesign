@@ -22,6 +22,14 @@ function clearJoypad()
     joypad.set(controller)
 end
 
+-- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+function getGameInfo()
+    marioX = memory.read_s16_le(0x94)
+    marioY = memory.read_s16_le(0x96)
+    retMessage = marioX .. ',' .. marioY
+    return retMessage
+end 
+
 -- Send game information to the Python TCP server
 function sendGameInfo(msg)
     -- Lua TCP Client
@@ -81,7 +89,7 @@ end
 
 ----------------------------------------------------------
 ----------------------------------------------------------
---Everything above this chunk of comments are functions---
+--Only functions above------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
@@ -90,8 +98,8 @@ end
 ----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
---Everything below this chunk of comments is sequentially
--- executed code -----------------------------------------
+--Only sequentially executed code below-------------------
+----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
 
@@ -108,7 +116,7 @@ if gameinfo.getromname() == "Super Mario World (USA)" then
         "Right",
     }
 else
-    console.writeline("This ROM is not Super Mario World (USA)")
+    console.writeline("The ROM is not Super Mario World (USA)")
     console.writeline("Please use the correct ROM to run this lua code")
 end
 
@@ -125,12 +133,18 @@ client = socket.try(socket.connect("127.0.0.1", 9994))
 -- find out which port the OS chose for us
 ip, port = client:getsockname()
 
-message = "2,5,1,10,20"
+message = ""
 
 while true do
     -- initialize a new run
     setupRun()
-    for i = 0, 10000, 1 do
+    while true do
+        -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+        message = getGameInfo()
+        -- check if Mario is no longer alive
+        if(marioX == 0 and marioY == 0) then
+            break -- break out of inner while loop if Mario is no longer alive
+        end
         -- send the game info to the Fuzzy algorithm and get the response
         msgReturned = sendGameInfo(message)
         -- set the joypad to press the button returned by the algorithm
