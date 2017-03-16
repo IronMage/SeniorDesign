@@ -8,12 +8,15 @@ def distRule(inputSet, outputSet):
     yRange = inputSet.getResults("DY")
 
     outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0] * 5)
-    outputSet.addToOwnership("CONTROLLER", "A"    , xRange[1] * 20)
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[2] * 10)
+    outputSet.addToOwnership("CONTROLLER", "RIGHT"    , xRange[1] * 20)
+    outputSet.addToOwnership("CONTROLLER", "A", xRange[2] * 10)
 
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[0] * 5)
     outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1] * 10)
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2] * 10)
+
+def moveMario(inputSet, outputSet):
+
 
 class FuzzyLogic:
     def setUpInputs(self):
