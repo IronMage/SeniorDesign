@@ -18,6 +18,7 @@ class server:
         data = self.conn.recv(1024).decode()
         if not data:
             print("No data received")
+        print("received: " + str(data))
         return(str(data))
 
     def send(self, button):
