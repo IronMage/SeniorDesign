@@ -133,8 +133,7 @@ client = socket.try(socket.connect("127.0.0.1", 9994))
 -- find out which port the OS chose for us
 ip, port = client:getsockname()
 
-message = ""
-
+-- run the algorithm on the game
 while true do
     -- initialize a new run
     setupRun()
@@ -151,6 +150,7 @@ while true do
         pushButton(msgReturned)
         -- advance the screen frame
         emu.frameadvance();
+        -- keep track of the number of frames advanced through
         currentFrame = currentFrame + 1
     end
 end
