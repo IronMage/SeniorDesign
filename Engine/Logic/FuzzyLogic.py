@@ -16,13 +16,6 @@ def distRule(inputSet, outputSet):
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2] * 10)
 
 class FuzzyLogic:
-    def __init__(self):
-        self.inputSet = FuzzySets()
-        self.outputSet = FuzzySets()
-        self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
-        self.fuzzifier = Fuzzifier(self.inputSet)
-        self.defuzzifier = Defuzzifier(self.outputSet)
-    
     def setUpInputs(self):
         dx = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
         dy = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
@@ -36,6 +29,16 @@ class FuzzyLogic:
     def setUpRules(self):
         dRule = FuzzyRule(distRule, ["DX", "DY"], ["CONTROLLER"])
         self.ruleSet.addRule(dRule)
+
+    def __init__(self):
+        self.inputSet = FuzzySets()
+        self.outputSet = FuzzySets()
+        self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
+        self.fuzzifier = Fuzzifier(self.inputSet)
+        self.defuzzifier = Defuzzifier(self.outputSet)
+        self.setUpInputs()
+        self.setUpOutputs()
+        self.setUpRules()
 
     def testingFunction(self):
         self.inputSet.getOwnership("DX", 1)
@@ -54,9 +57,6 @@ class FuzzyLogic:
 class TestFuzzyLogic(unittest.TestCase):
     def testFuzzyLogic(self):       
         fz = FuzzyLogic()
-        fz.setUpInputs()
-        fz.setUpOutputs()
-        fz.setUpRules()
 
         fz.testingFunction()
 
