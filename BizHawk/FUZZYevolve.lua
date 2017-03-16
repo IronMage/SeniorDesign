@@ -8,12 +8,9 @@
 
 
 function setupRun()
-    print("Setting up run")
     savestate.load(Filename);
-    print("Loaded savestate")
     currentFrame = 0
     clearJoypad()
-    print("Cleared Joypad")
 end
 
 -- clear the controller to prepare for next move
@@ -25,25 +22,63 @@ function clearJoypad()
     joypad.set(controller)
 end
 
+-- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+function getGameInfo()
+    marioX = memory.read_s16_le(0x94)
+    marioY = memory.read_s16_le(0x96)
+    retMessage = marioX .. ',' .. marioY
+    return retMessage
+end 
+
 -- Send game information to the Python TCP server
 function sendGameInfo(msg)
     -- Lua TCP Client
     -- Used for sending the game info to the python Server
-    -- Message format will be number of enemies followed by the x y pair for each enemy
-
-    -- print("Sending: " .. msg)
+    -- Message format will be MarioX, MarioY, number of enemies, x y pair for each enemy
+    -- Message is comma delimited
     client:send(msg .. '\n')
-    -- print("Receiving from server")
     local line, err = client:receive()
 
     -- if there was no error
     if not err then 
-        -- console.writeline("Server replied: " .. line)
         return line
     else  -- if there was an error
         console.writeline("Error in receiving from TCP server")
         return "Error"
     end
+end
+
+--set the joypad to push the button returned from the Fuzzy Algorithm
+function pushButton(message)
+    if msgReturned == "RIGHT" then
+        -- console.log("RIGHT Returned")
+        button = "Right"
+    elseif msgReturned == "LEFT" then
+        button = "Left"
+    elseif msgReturned == "UP" then
+        button = "Up"
+    elseif msgReturned == "DOWN" then
+        button = "Down"
+    elseif msgReturned == "A" then
+        button = "A"
+    elseif msgReturned == "B" then
+        button = "B"
+    elseif msgReturned == "X" then
+        button = "X"
+    elseif msgReturned == "Y" then
+        button = "Y"
+    else
+        button = ""
+    end
+
+    for b = 1,#ButtonNames do
+        if ButtonNames[b] == button then
+            controller["P1 " .. ButtonNames[b]] = true
+        else
+            controller["P1 " .. ButtonNames[b]] = false
+        end
+    end
+    joypad.set(controller)
 end
 
 -- Gracefully handle unexpected exit
@@ -54,7 +89,7 @@ end
 
 ----------------------------------------------------------
 ----------------------------------------------------------
---Everything above this chunk of comments are functions---
+--Only functions above------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
@@ -63,8 +98,8 @@ end
 ----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
---Everything below this chunk of comments is sequentially
--- executed code -----------------------------------------
+--Only sequentially executed code below-------------------
+----------------------------------------------------------
 ----------------------------------------------------------
 ----------------------------------------------------------
 
@@ -81,59 +116,44 @@ if gameinfo.getromname() == "Super Mario World (USA)" then
         "Right",
     }
 else
-    console.writeline("This ROM is not Super Mario World (USA)")
+    console.writeline("The ROM is not Super Mario World (USA)")
     console.writeline("Please use the correct ROM to run this lua code")
 end
 
 -- Create a form ----------------------------------------------------
 form = forms.newform(200, 260, "Fitness")
 maxFitnessLabel = forms.label(form, "Best Score: 0", 5, 8)
--- maxFitnessLabel = forms.label(form, "Max Fitness: " .. math.floor(pool.maxFitness), 5, 8)
--- showNetwork = forms.checkbox(form, "Show Map", 5, 30)
--- showMutationRates = forms.checkbox(form, "Show M-Rates", 5, 52)
--- restartButton = forms.button(form, "Restart", initializePool, 5, 77)
--- saveButton = forms.button(form, "Save", savePool, 5, 102)
--- loadButton = forms.button(form, "Load", loadPool, 80, 102)
--- saveLoadFile = forms.textbox(form, Filename .. ".pool", 170, 25, nil, 5, 148)
--- saveLoadLabel = forms.label(form, "Save/Load:", 5, 129)
--- playTopButton = forms.button(form, "Play Top", playTop, 5, 170)
--- hideBanner = forms.checkbox(form, "Hide Banner", 5, 190)
 
 -- Lua TCP Client ---------------------------------------------------
 -- Used for sending the game info to the python Server over local host
--- Message format will be number of enemies followed by the x y pair for each enemy
 -- load namespace
 socket = require("socket")
 -- create a TCP socket and bind it to the local host, at any port
 client = socket.try(socket.connect("127.0.0.1", 9994))
 -- find out which port the OS chose for us
 ip, port = client:getsockname()
--- print("Connecting to local host on port " .. port)
 
-message = "message 1 10 20"
+message = ""
 
--- while true do
+while true do
+    -- initialize a new run
     setupRun()
-    -- console.log("Finished run setup")
-    for i = 1,1000,1 do
-        -- console.log("Current Frame: " .. currentFrame)
+    while true do
+        -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+        message = getGameInfo()
+        -- check if Mario is no longer alive
+        if(marioX == 0 and marioY == 0) then
+            break -- break out of inner while loop if Mario is no longer alive
+        end
+        -- send the game info to the Fuzzy algorithm and get the response
         msgReturned = sendGameInfo(message)
-        -- console.log("Returned: " .. msgReturned)
-        if msgReturned == "RIGHT" then
-            -- console.log("RIGHT Returned")
-            for b = 1,#ButtonNames do
-                if ButtonNames[b] == "Right" then
-                    controller["P1 " .. ButtonNames[b]] = true
-                else
-                    controller["P1 " .. ButtonNames[b]] = false
-                end
-            end
-        joypad.set(controller)
+        -- set the joypad to press the button returned by the algorithm
+        pushButton(msgReturned)
+        -- advance the screen frame
         emu.frameadvance();
         currentFrame = currentFrame + 1
-        end
     end
--- end
+end
 
 -- Gracefully handle unexpected exit
 event.onexit(onExit)
