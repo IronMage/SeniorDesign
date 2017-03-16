@@ -6,9 +6,18 @@ from Server import *
 
 
 def Main():
+    #initialize server, will wait until connection is made from FUZZYevolve client
     Server = server()
+    #intialize gameInfo
+    gameInfo = ""
+    #initialize buttonToPress
+    buttonToPress = ""
+    #begin the game
     while True:
-        Server.receive()
+        #receive the game info from the FUZZYevolve client
+        gameInfo = Server.receive()
+        #send gameInfo to FUZZYevolve, assigning the returned button to buttonToPress
+        #send buttonToPress back to FUZZYevolve client
         Server.send("RIGHT")
      
 if __name__ == '__main__':
