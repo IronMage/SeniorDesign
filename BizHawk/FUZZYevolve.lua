@@ -6,7 +6,7 @@
 -- For SMW, make sure you have a save state named "SMW1.state" at the beginning of "Donut Plains 1",
 -- and put a copy in both the Lua folder and the root directory of BizHawk.
 
-
+-- load save state file, reset currentFrame, make sure no buttons are pressed
 function setupRun()
     savestate.load(Filename);
     currentFrame = 0
@@ -30,7 +30,7 @@ function getGameInfo()
     retMessage = marioX .. ',' .. marioY
 
     -- get number of enemies
-    local sprites = {}
+    sprites = {}
     for slot=0,11 do
         local status = memory.readbyte(0x14C8+slot)
         if status ~= 0 then
@@ -39,7 +39,7 @@ function getGameInfo()
             sprites[#sprites+1] = {["x"]=spritex, ["y"]=spritey}
         end
     end
-    local extended = {}
+    extended = {}
     for slot=0,11 do
         local number = memory.readbyte(0x170B+slot)
         if number ~= 0 then
@@ -79,7 +79,7 @@ function sendGameInfo(msg)
 end
 
 --set the joypad to push the button returned from the Fuzzy Algorithm
-function pushButton(message)
+function pushButton()
     if msgReturned == "RIGHT" then
         -- console.log("RIGHT Returned")
         button = "Right"
@@ -109,6 +109,77 @@ function pushButton(message)
         end
     end
     joypad.set(controller)
+end
+
+-- display the map of sprites relative to mario
+function displaySprites()
+    -- initialize variables
+    local cells = {}
+    local i = 1
+    local cell = {}
+    -- define the space traversed for enemies relative to mario at (0,0)
+    local BoxRadius = 100
+    for dy=-BoxRadius,BoxRadius do
+        for dx=-BoxRadius,BoxRadius do
+            cell = {}
+            -- (0,0) is the top left of the box that will be drawn
+            -- To center mario in the box, add 75 to each x and y
+            cell.x = dx+75
+            cell.y = dy+75
+            -- set value to 0 in case of no mario or sprite
+            cell.value = 0
+            -- if mario (center)
+            if dy == 0 and dx == 0 then
+                -- set sell to gray
+                cell.value = 127
+            else
+                -- for all sprites
+                for key, value in ipairs(sprites) do
+                    -- if sprite is within the space traversed
+                    -- if (((value["x"]-marioX) == dx) and ((value["y"]-marioY) == dy)) then
+                    -- if sprite is within the space traversed times two (To see further)
+                    if ((((value["x"]-marioX) == dx*2) or ((value["x"]-marioX) == dx*2-1)) and
+                        (((value["y"]-marioY) == dy*2) or ((value["y"]-marioY) == dy*2-1))) then
+                        --set cell to white
+                        cell.value = 255
+                    end
+                end
+                -- for all extended sprites
+                for key, value in ipairs(extended) do
+                    -- if sprite is within the space traversed
+                    -- if (((value["x"]-marioX) == dx) and ((value["y"]-marioY) == dy)) then
+                    -- if sprite is within the space traversed times two (To see further)
+                    if ((((value["x"]-marioX) == dx*2) or ((value["x"]-marioX) == dx*2-1)) and
+                        (((value["y"]-marioY) == dy*2) or ((value["y"]-marioY) == dy*2-1))) then
+                        --set cell to white
+                        cell.value = 255
+                    end
+                end
+            end
+            -- add cell just defined to list of all cells
+            cells[i] = cell
+            i = i + 1
+        end
+    end
+    -- draw the whole box on the emulator's screen
+    gui.drawBox(-BoxRadius*1.5,-BoxRadius*1.5,BoxRadius*1.5,BoxRadius*1.5,0xFF000000, 0x80808080)
+    -- for all cells
+    for n,cell in pairs(cells) do
+        -- if cell has mario or sprite (not equal to 0)
+        if cell.value ~= 0 then
+            local color = cell.value
+            -- safety checks
+            if color > 255 then color = 255 end
+            if color < 0 then color = 0 end
+            local opacity = 0xFF000000
+            if cell.value == 0 then
+                opacity = 0x50000000
+            end
+            color = opacity + color*0x10000 + color*0x100 + color
+            -- draw small box representing mario or sprite
+            gui.drawBox(cell.x-2,cell.y-2,cell.x+2,cell.y+2,opacity,color)
+        end
+    end
 end
 
 -- Gracefully handle unexpected exit
@@ -153,6 +224,7 @@ end
 -- Create a form ----------------------------------------------------
 form = forms.newform(200, 260, "Fitness")
 maxFitnessLabel = forms.label(form, "Best Score: 0", 5, 8)
+showNetwork = forms.checkbox(form, "Show Map", 5, 30)
 
 -- Lua TCP Client ---------------------------------------------------
 -- Used for sending the game info to the python Server over local host
@@ -174,10 +246,14 @@ while true do
         if(marioX == 0 and marioY == 0) then
             break -- break out of inner while loop if Mario is no longer alive
         end
+        -- check if sprite display is desired
+        if forms.ischecked(showNetwork) then
+            displaySprites()
+        end
         -- send the game info to the Fuzzy algorithm and get the response
         msgReturned = sendGameInfo(message)
         -- set the joypad to press the button returned by the algorithm
-        pushButton(msgReturned)
+        pushButton()
         -- advance the screen frame
         emu.frameadvance();
         -- keep track of the number of frames advanced through
