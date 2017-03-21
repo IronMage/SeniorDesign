@@ -49,13 +49,13 @@ class TrapazoidalGraph:
     #            self, numberOfRanges, rangeStart, plateauStart , plateauEnd, rangeEnd, etc.
     def __init__(self,*args):
         if( len(args) != (1 + (args[0] * 4)) ):
-            errorString = "The format for TriangularGraph is numberOfRanges, rangeStart, rangeEnd, rangeStart, rangeEnd, etc..."
+            errorString = "The format for TrapazoidalGraph is numberOfRanges, rangeStart, rangeEnd, rangeStart, rangeEnd, etc..."
             print(errorString)
             infoString = "The length expected is " + str((1 + (args[0] * 4))) + " the total length is " + str(len(args))
             print(infoString)
             for i in range(len(args)):
                 print(args[i])
-            raise ValueError("The number of arguments in TriangularGraph did not match expected value.")
+            raise ValueError("The number of arguments in TrapazoidalGraph did not match expected value.")
         self.rangeDimensions = []
         self.numberOfRanges = args[0]
         self.rangeOwnership = [None] * args[0]

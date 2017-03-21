@@ -18,6 +18,8 @@ class FuzzyRule:
                 pass
             else:
                 raise ValueError("Required output set " + str(s) + " does not exist in the current master output set.")
+    def getName(self):
+        return self.function.__name__
 
 class FuzzyRuleSet:
     def __init__(self, inputSets, outputSets):
@@ -32,12 +34,18 @@ class FuzzyRuleSet:
     def getRules(self):
         return self.rules 
     def runRules(self):
-        for r in self.rules:
-            r.checkRule(self.inputs, self.outputs)
-            r.runRule(self.inputs, self.outputs)
+        #print(self.rules)
+        names = []
+        returnValues = []
+        for x in range(len(self.rules)):
+            names.append(self.rules[x].getName())
+            self.rules[x].checkRule(self.inputs, self.outputs)
+            returnValues.append(self.rules[x].runRule(self.inputs, self.outputs))
+        print("RAN " + str(names))
+        return returnValues
     def checkRules(self):
-        for r in self.rules:
-            r.checkRule(self.inputs, self.outputs)
+        for x in range(len(self.rules)):
+            self.rules[x].checkRule(self.inputs, self.outputs)
 
 
 def testingRuleFunction(inputSets, outputSets):
@@ -95,7 +103,7 @@ class TestFuzzyRules(unittest.TestCase):
         fzRules.addRule(r1)
         self.assertEqual(r1, fzRules.getRules()[0])             #Make sure the rule and the first rule of the set are the same
 
-        fzRules.runRules()                                      #Make sure you can check and run the rules
+        self.assertEqual(fzRules.runRules()[0], r1.runRule(inSet, outSet))                                  #Make sure you can check and run the rules
 
 
 

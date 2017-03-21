@@ -12,37 +12,50 @@ from FuzzySet import *
 class Defuzzifier:
     def __init__(self, outputSet):
         self.outputSet = outputSet
-        self.lastSelected = ["",""]*5
+        self.lastSelected = [""]*8
 
     def shiftLeftList(self):
         length = len(self.lastSelected)
-        for x in range(length - 1):
-            self.lastSelected[length - x] = self.lastSelected[length - 1 - x] 
+        for x in range(length - 2):
+            self.lastSelected[x] = self.lastSelected[x+1] 
+
+    def enterList(self, n1, n2):
+        length = len(self.lastSelected)
+        if(n2 is None):
+            self.lastSelected[length - 2] = n1
+            self.lastSelected[length - 1] = ""
+        else:
+            self.lastSelected[length - 2] = n1
+            self.lastSelected[length - 1] = n2
 
     def limitA(self, n1, n2):
-        allAs = True
+        countAs = 0
         for x in range(len(self.lastSelected)):
-            if (self.lastSelected[x] != "A"):
-                allAs = False
-                break
+            if (self.lastSelected[x] == "A"):
+                countAs += 1
             else:
                 continue
-        if(not allAs):
+        #print("COUNTED " + str(countAs) + " NUMBER OF A'S")
+        if(countAs < (len(self.lastSelected) / 2)):
+            #print("RETURNING " + n1 + " AND " + n2)
             return n1, n2
         elif(n1 == "A"):
             n1 = n2
             n2 = None
+            #print("RETURNING " + n1 + " AND None")
             return n1, n2
         else:
+            #print("RETURNING " + n1 + " AND None")
             return n1, None
         
     def checkConflicting(self, n1, n2):
-        n1,n2 = limitA(n1,n2)
+        #print("LAST SELECTED OUTPUTS:")
+        #print(self.lastSelected)
         if(n2 is None):
             return True
         if((n1 == "RIGHT" and n2 == "LEFT") or (n1 == "LEFT" and n2 == "RIGHT")):
             return True
-        else if((n1 == "UP" and n2 == "DOWN")  or (n1 == "DOWN" and n2 == "UP")):
+        elif((n1 == "UP" and n2 == "DOWN")  or (n1 == "DOWN" and n2 == "UP")):
             return True
         else:
             return False
@@ -63,14 +76,22 @@ class Defuzzifier:
                 runnerUpName = maxName
                 maxValue = results[i]
                 maxName = names[i]
-            else if(results[i] > runnerUpValue):
+            elif(results[i] > runnerUpValue):
                 runnerUpValue = results[i]
                 runnerUpName = names[i]
             else:
                 continue
-        if(checkConflicting(maxName, runnerUpName)):
+        if(self.checkConflicting(maxName, runnerUpName)):
+            maxName, runnerUpName = self.limitA(maxName, runnerUpName)
+            self.shiftLeftList()
+            self.shiftLeftList()
+            self.enterList(maxName, None)
             return maxName, None
         else:
+            maxName, runnerUpName = self.limitA(maxName, runnerUpName)
+            self.shiftLeftList()
+            self.shiftLeftList()
+            self.enterList(maxName,runnerUpName)
             return maxName,runnerUpName
 
 
@@ -101,14 +122,14 @@ class TestDefuzzifier(unittest.TestCase):
         fz.addToOwnership("CONTROLLER", "LEFT", LFT)
         fz.addToOwnership("CONTROLLER", "RIGHT", RGT)
 
-        ret = dFz.selectOutput()
+        ret1, ret2 = dFz.selectOutput()
         value = 0
         for i in range(len(myList)):
-            if(ret == myNames[i]):
+            if(ret1 == myNames[i]):
                 value = myList[i]
             else:
                 continue
-
+        #print(myList)
         self.assertEqual(value, max(myList))
 
 if __name__ == '__main__':

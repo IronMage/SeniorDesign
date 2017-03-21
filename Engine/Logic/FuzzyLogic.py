@@ -6,28 +6,51 @@ from Fuzzifier import *
 def distRule(inputSet, outputSet):
     xRange = inputSet.getResults("DX")
     yRange = inputSet.getResults("DY")
+    print(xRange)
+    print(yRange)
 
+    #print("xRange type " + str(type(xRange)) + "yRange type " + str(type(yRange)))
+    if(xRange[0] is None or yRange[0] is None):
+        return False
+    '''
+    print("dist CURRENT VALUES:")
+    print(outputSet.getNames("CONTROLLER"))
+    print(outputSet.getResults("CONTROLLER"))
+    '''
     outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0])
     outputSet.addToOwnership("CONTROLLER", "A",     xRange[1])
     outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[2])
 
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[0])
-    outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1])
+    outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1] * -1)
     outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2])
+    '''
+    print("AFTER DIST VALUES:")
+    print(outputSet.getNames("CONTROLLER"))
+    print(outputSet.getResults("CONTROLLER"))
+    '''
 
 def moveMario(inputSet, outputSet):
+    #print("ENTERED MOVE MARIO")
     xRange = inputSet.getResults("MARIODX")
+    '''
+    print("xRange type " + str(type(xRange)))
 
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0])
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[1])
+    print("move CURRENT VALUES:")
+    print(outputSet.getNames("CONTROLLER"))
+    print(outputSet.getResults("CONTROLLER"))
+    '''
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0] * .5)
+    print(outputSet.getNames("CONTROLLER"))
+    print(outputSet.getResults("CONTROLLER"))
 
 class FuzzyLogic:
     def setUpInputs(self):
         dx = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
-        dy = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
+        dy = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -50, 50, 50, 25, 50, 100, 100)
         self.inputSet.addSet(dx, "DX")
         self.inputSet.addSet(dy, "DY")
-        marioDx = TrapazoidalGraph(2, -10, -10, -5, 0, -5, 0, 0, 5, 10)
+        marioDx = TrapazoidalGraph(1, -10, -10, 10, 10)
         self.inputSet.addSet(marioDx, "MARIODX")
 
     def setUpOutputs(self):
@@ -36,17 +59,21 @@ class FuzzyLogic:
 
     def setUpRules(self):
         dRule = FuzzyRule(distRule, ["DX", "DY"], ["CONTROLLER"])
+        #print("SET UP " + dRule.getName())
         self.ruleSet.addRule(dRule)
+        mRule = FuzzyRule(moveMario, ["MARIODX"], ["CONTROLLER"])
+        #print("SET UP " + mRule.getName())
+        self.ruleSet.addRule(mRule)
 
     def __init__(self):
         self.inputSet = FuzzySets()
         self.outputSet = FuzzySets()
-        self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
-        self.fuzzifier = Fuzzifier(self.inputSet)
-        self.defuzzifier = Defuzzifier(self.outputSet)
         self.setUpInputs()
         self.setUpOutputs()
+        self.ruleSet = FuzzyRuleSet(self.inputSet, self.outputSet)
         self.setUpRules()
+        self.fuzzifier = Fuzzifier(self.inputSet)
+        self.defuzzifier = Defuzzifier(self.outputSet)
 
     def testingFunction(self):
         self.inputSet.getOwnership("DX", 1)
@@ -54,10 +81,13 @@ class FuzzyLogic:
 
     def run(self, message):
         numEnemies = self.fuzzifier.parseMessage(message)
-        for x in range(numEnemies):
-            self.fuzzifier.getEnemies(x)
-            self.ruleSet.runRules()
         self.fuzzifier.getMario()
+        if(numEnemies > 0):
+            for x in range(numEnemies):
+                self.fuzzifier.getEnemies(x)
+                self.ruleSet.runRules()
+        else:
+            self.ruleSet.runRules()
         out1, out2 = self.defuzzifier.selectOutput()
         self.outputSet.clearOwnership("CONTROLLER")
         return out1, out2

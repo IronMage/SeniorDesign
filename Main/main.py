@@ -28,4 +28,5 @@ def Main():
         Server.send(buttonToPress)
      
 if __name__ == '__main__':
-    Main()
+	#unittest.main()
+	Main()
