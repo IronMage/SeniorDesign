@@ -19,8 +19,11 @@ def Main():
         #receive the game info from the FUZZYevolve client
         gameInfo = Server.receive()
         #send gameInfo to FUZZYevolve, assigning the returned button to buttonToPress
-        buttonToPress = fz.run(gameInfo)
-        print(buttonToPress)
+        buttonToPress, otherButton = fz.run(gameInfo)
+        if(otherButton is not None):
+        	print(buttonToPress + otherButton)
+        else:
+        	print(buttonToPress)
         #send buttonToPress back to FUZZYevolve client
         Server.send(buttonToPress)
      

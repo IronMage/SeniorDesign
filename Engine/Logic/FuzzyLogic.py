@@ -7,13 +7,19 @@ def distRule(inputSet, outputSet):
     xRange = inputSet.getResults("DX")
     yRange = inputSet.getResults("DY")
 
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0] * 5)
-    outputSet.addToOwnership("CONTROLLER", "A", xRange[1] * 20)
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[2] * 10)
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0])
+    outputSet.addToOwnership("CONTROLLER", "A",     xRange[1])
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[2])
 
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[0] * 5)
-    outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1] * 10)
-    outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2] * 10)
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[0])
+    outputSet.addToOwnership("CONTROLLER", "A"    , yRange[1])
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", yRange[2])
+
+def moveMario(inputSet, outputSet):
+    xRange = inputSet.getResults("MARIODX")
+
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[0])
+    outputSet.addToOwnership("CONTROLLER", "RIGHT", xRange[1])
 
 class FuzzyLogic:
     def setUpInputs(self):
@@ -21,6 +27,8 @@ class FuzzyLogic:
         dy = TrapazoidalGraph(3, -100, -100, -50, -25, -50, -10, 10, 50, 25, 50, 100, 100)
         self.inputSet.addSet(dx, "DX")
         self.inputSet.addSet(dy, "DY")
+        marioDx = TrapazoidalGraph(2, -10, -10, -5, 0, -5, 0, 0, 5, 10)
+        self.inputSet.addSet(marioDx, "MARIODX")
 
     def setUpOutputs(self):
         controller = BarGraph(6, "A", "B", "UP", "DOWN", "LEFT", "RIGHT")
@@ -47,12 +55,12 @@ class FuzzyLogic:
     def run(self, message):
         numEnemies = self.fuzzifier.parseMessage(message)
         for x in range(numEnemies):
-            self.fuzzifier.getInput(x)
+            self.fuzzifier.getEnemies(x)
             self.ruleSet.runRules()
-        selectedOutput = self.defuzzifier.selectOutput()
+        self.fuzzifier.getMario()
+        out1, out2 = self.defuzzifier.selectOutput()
         self.outputSet.clearOwnership("CONTROLLER")
-        return selectedOutput
-
+        return out1, out2
 
 class TestFuzzyLogic(unittest.TestCase):
     def testFuzzyLogic(self):       

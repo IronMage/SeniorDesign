@@ -12,18 +12,28 @@ class Fuzzifier:
     def __init__(self, inputSet):
         self.inputSet = inputSet
         self.currentMessage = {}
+        self.lastMarioX = 0
+        self.lastMarioY = 0
         self.marioX = 0
         self.marioY = 0
         self.enemyCoordinateStart = 3
 
     def parseMessage(self, message):
         self.currentMessage = message.split(",")
+        self.lastMarioX = self.marioX
+        self.lastMarioY = self.marioY
         self.marioX = int(self.currentMessage[0])
         self.marioY = int(self.currentMessage[1])
 
         return int(self.currentMessage[2])
 
-    def getInput(self, coordinatePair):
+    def getMario(self):
+        if(self.inputSet.exists("MARIODX")):
+            self.inputSet.getOwnership("MARIODX", (self.marioX - self.lastMarioX))
+        else:
+            raise ValueError("MARIODX does not exist in supplied input set")
+
+    def getEnemies(self, coordinatePair):
         if(self.inputSet.exists("DX") and self.inputSet.exists("DY")):
             enemyX = int(self.currentMessage[self.enemyCoordinateStart + (2 * coordinatePair)])
             enemyY = int(self.currentMessage[self.enemyCoordinateStart + (2 * coordinatePair) + 1])
@@ -49,7 +59,7 @@ class TestFuzzifier(unittest.TestCase):
         self.assertEqual(1, fzy.parseMessage(string))
 
         with self.assertRaises(ValueError):
-            fzy.getInput(0)
+            fzy.getEnemies(0)
 
 if __name__ == '__main__':
     unittest.main()

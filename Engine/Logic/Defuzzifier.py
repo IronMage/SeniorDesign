@@ -12,6 +12,41 @@ from FuzzySet import *
 class Defuzzifier:
     def __init__(self, outputSet):
         self.outputSet = outputSet
+        self.lastSelected = ["",""]*5
+
+    def shiftLeftList(self):
+        length = len(self.lastSelected)
+        for x in range(length - 1):
+            self.lastSelected[length - x] = self.lastSelected[length - 1 - x] 
+
+    def limitA(self, n1, n2):
+        allAs = True
+        for x in range(len(self.lastSelected)):
+            if (self.lastSelected[x] != "A"):
+                allAs = False
+                break
+            else:
+                continue
+        if(not allAs):
+            return n1, n2
+        elif(n1 == "A"):
+            n1 = n2
+            n2 = None
+            return n1, n2
+        else:
+            return n1, None
+        
+    def checkConflicting(self, n1, n2):
+        n1,n2 = limitA(n1,n2)
+        if(n2 is None):
+            return True
+        if((n1 == "RIGHT" and n2 == "LEFT") or (n1 == "LEFT" and n2 == "RIGHT")):
+            return True
+        else if((n1 == "UP" and n2 == "DOWN")  or (n1 == "DOWN" and n2 == "UP")):
+            return True
+        else:
+            return False
+
     def selectOutput(self):
         results = self.outputSet.getResults("CONTROLLER")
         s = self.outputSet.getSets()
@@ -19,18 +54,25 @@ class Defuzzifier:
 
         maxName = ""
         maxValue = -1
+        runnerUpName = ""
+        runnerUpValue = -1;
 
         for i in range(len(results)):
-            if(results[i] > maxValue):
+            if(results[i] > runnerUpValue and results[i] > maxValue):
+                runnerUpValue = maxValue
+                runnerUpName = maxName
                 maxValue = results[i]
                 maxName = names[i]
+            else if(results[i] > runnerUpValue):
+                runnerUpValue = results[i]
+                runnerUpName = names[i]
             else:
                 continue
-        return maxName
+        if(checkConflicting(maxName, runnerUpName)):
+            return maxName, None
+        else:
+            return maxName,runnerUpName
 
-    def sendToEmulator(self, outputName):
-        #insert code here
-        return 0
 
 from random import randint
 class TestDefuzzifier(unittest.TestCase):
