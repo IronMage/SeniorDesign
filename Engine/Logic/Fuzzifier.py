@@ -39,7 +39,7 @@ class Fuzzifier:
             enemyY = int(self.currentMessage[self.enemyCoordinateStart + (2 * coordinatePair) + 1])
             dx = self.marioX - enemyX
             dy = self.marioY - enemyY
-            print("Enemy " + str(coordinatePair) + " dx " + str(dx) + " dy " + str(dy))
+            #print("Enemy " + str(coordinatePair) + " dx " + str(dx) + " dy " + str(dy))
             self.inputSet.getOwnership("DX", dx)
             self.inputSet.getOwnership("DY", dy)
         else:

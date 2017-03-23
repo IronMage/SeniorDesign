@@ -41,7 +41,7 @@ class FuzzyRuleSet:
             names.append(self.rules[x].getName())
             self.rules[x].checkRule(self.inputs, self.outputs)
             returnValues.append(self.rules[x].runRule(self.inputs, self.outputs))
-        print("RAN " + str(names))
+        #print("RAN " + str(names))
         return returnValues
     def checkRules(self):
         for x in range(len(self.rules)):

@@ -14,43 +14,30 @@ class Defuzzifier:
         self.outputSet = outputSet
         self.lastSelected = [""]*8
 
-    def shiftLeftList(self):
-        length = len(self.lastSelected)
-        for x in range(length - 2):
-            self.lastSelected[x] = self.lastSelected[x+1] 
-
     def enterList(self, n1, n2):
-        length = len(self.lastSelected)
+        self.lastSelected.pop()
+        self.lastSelected.pop()
         if(n2 is None):
-            self.lastSelected[length - 2] = n1
-            self.lastSelected[length - 1] = ""
+            self.lastSelected.insert(0, n1)
+            self.lastSelected.insert(0, "")
         else:
-            self.lastSelected[length - 2] = n1
-            self.lastSelected[length - 1] = n2
+            self.lastSelected.insert(0, n1)
+            self.lastSelected.insert(0, n2)
 
     def limitA(self, n1, n2):
-        countAs = 0
-        for x in range(len(self.lastSelected)):
-            if (self.lastSelected[x] == "A"):
-                countAs += 1
-            else:
-                continue
-        #print("COUNTED " + str(countAs) + " NUMBER OF A'S")
-        if(countAs < (len(self.lastSelected) / 2)):
-            #print("RETURNING " + n1 + " AND " + n2)
+        countAs = self.lastSelected.count("A") 
+        print(self.lastSelected)
+        print("Found " + str(countAs) + " A's") 
+        if(countAs < (len(self.lastSelected) / 3)):
             return n1, n2
         elif(n1 == "A"):
             n1 = n2
             n2 = None
-            #print("RETURNING " + n1 + " AND None")
             return n1, n2
         else:
-            #print("RETURNING " + n1 + " AND None")
             return n1, None
         
     def checkConflicting(self, n1, n2):
-        #print("LAST SELECTED OUTPUTS:")
-        #print(self.lastSelected)
         if(n2 is None):
             return True
         if((n1 == "RIGHT" and n2 == "LEFT") or (n1 == "LEFT" and n2 == "RIGHT")):
@@ -83,16 +70,15 @@ class Defuzzifier:
                 continue
         if(self.checkConflicting(maxName, runnerUpName)):
             maxName, runnerUpName = self.limitA(maxName, runnerUpName)
-            self.shiftLeftList()
-            self.shiftLeftList()
             self.enterList(maxName, None)
             return maxName, None
         else:
             maxName, runnerUpName = self.limitA(maxName, runnerUpName)
-            self.shiftLeftList()
-            self.shiftLeftList()
             self.enterList(maxName,runnerUpName)
-            return maxName,runnerUpName
+            if(runnerUpValue == 0):
+                return maxName,None
+            else:
+                return maxName,runnerUpName
 
 
 from random import randint

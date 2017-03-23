@@ -21,11 +21,14 @@ def Main():
         #send gameInfo to FUZZYevolve, assigning the returned button to buttonToPress
         buttonToPress, otherButton = fz.run(gameInfo)
         if(otherButton is not None):
-        	print(buttonToPress + otherButton)
+	        #send buttonToPress back to FUZZYevolve client
+	        msg = buttonToPress + " " + otherButton
+        	print(msg)
+	        Server.send(msg)
         else:
         	print(buttonToPress)
-        #send buttonToPress back to FUZZYevolve client
-        Server.send(buttonToPress)
+	        #send buttonToPress back to FUZZYevolve client
+	        Server.send(buttonToPress)
      
 if __name__ == '__main__':
 	#unittest.main()
