@@ -80,35 +80,53 @@ end
 
 --set the joypad to push the button returned from the Fuzzy Algorithm
 function pushButton()
-    if msgReturned == "RIGHT" then
-        -- console.log("RIGHT Returned")
-        button = "Right"
-    elseif msgReturned == "LEFT" then
-        button = "Left"
-    elseif msgReturned == "UP" then
-        button = "Up"
-    elseif msgReturned == "DOWN" then
-        button = "Down"
-    elseif msgReturned == "A" then
-        button = "A"
-    elseif msgReturned == "B" then
-        button = "B"
-    elseif msgReturned == "X" then
-        button = "X"
-    elseif msgReturned == "Y" then
-        button = "Y"
-    else
-        button = ""
-    end
-
-    for b = 1,#ButtonNames do
-        if ButtonNames[b] == button then
-            controller["P1 " .. ButtonNames[b]] = true
+    local t = {} ; i = 1
+    for w in string.gmatch(msgReturned, "%a+") do
+        if w == "RIGHT" then
+            -- console.log("RIGHT Returned")
+            button = "Right"
+        elseif w == "LEFT" then
+            button = "Left"
+        elseif w == "UP" then
+            button = "Up"
+        elseif w == "DOWN" then
+            button = "Down"
+        elseif w == "A" then
+            button = "A"
+        elseif w == "B" then
+            button = "B"
+        elseif w == "X" then
+            button = "X"
+        elseif w == "Y" then
+            button = "Y"
         else
-            controller["P1 " .. ButtonNames[b]] = false
+            button = ""
         end
+
+        t[i] = button
+        i = i + 1
     end
-    joypad.set(controller)
+    if(#t == 2) then
+        for b = 1,#ButtonNames do
+            if (ButtonNames[b] == t[1] or  ButtonNames[b] == t[2]) then
+                controller["P1 " .. ButtonNames[b]] = true
+            else
+                controller["P1 " .. ButtonNames[b]] = false
+            end
+        end
+        joypad.set(controller)
+        -- console.writeline(t[1] .. t[2])
+    else
+        for b = 1,#ButtonNames do
+            if (ButtonNames[b] == t[1]) then
+                controller["P1 " .. ButtonNames[b]] = true
+            else
+                controller["P1 " .. ButtonNames[b]] = false
+            end
+        end
+        joypad.set(controller)
+        -- console.writeline(t[1])
+    end
 end
 
 -- display the map of sprites relative to mario
