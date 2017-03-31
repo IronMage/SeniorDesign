@@ -49,15 +49,15 @@ function sendGameInfo(msg)
     -- Message format will be MarioX, MarioY, number of enemies, x y pair for each enemy
     -- Message is comma delimited
     client:send(msg .. '\n')
-    local line, err = client:receive()
+    -- local line, err = client:receive()
 
-    -- if there was no error
-    if not err then 
-        return line
-    else  -- if there was an error
-        console.writeline("Error in receiving from TCP server")
-        return "Error"
-    end
+    -- -- if there was no error
+    -- if not err then 
+    --     return line
+    -- else  -- if there was an error
+    --     console.writeline("Error in receiving from TCP server")
+    --     return "Error"
+    -- end
 end
 
 -- Gracefully handle unexpected exit
@@ -118,14 +118,14 @@ while true do
     -- initialize a new run
     setupRun()
     while true do
-        -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+        -- -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
         message = getGameInfo()
-        -- check if Mario is no longer alive
-        if(marioX == 0 and marioY == 0) then
-            break -- break out of inner while loop if Mario is no longer alive
-        end
-        -- send the game info to the Fuzzy algorithm and get the response
-        msgReturned = sendGameInfo(message)
+        -- -- check if Mario is no longer alive
+        -- if(marioX == 0 and marioY == 0) then
+        --     break -- break out of inner while loop if Mario is no longer alive
+        -- end
+        -- -- send the game info to the Fuzzy algorithm and get the response
+        sendGameInfo(message)
         -- advance the screen frame
         emu.frameadvance();
         -- keep track of the number of frames advanced through

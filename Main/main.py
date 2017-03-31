@@ -37,7 +37,8 @@ def DataMine():
         #receive the game info from the FUZZYevolve client
         gameInfo = Server.receive()
         with open('dataTesting.txt', 'a') as file:
-            file.write(gameInfo + "\n")
+            if(gameInfo != ""):
+                file.write(gameInfo)
      
 if __name__ == '__main__':
 	#unittest.main()
