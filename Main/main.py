@@ -29,7 +29,17 @@ def Main():
         	print(buttonToPress)
 	        #send buttonToPress back to FUZZYevolve client
 	        Server.send(buttonToPress)
+
+def DataMine():
+    #initialize server, will wait until connection is made from FUZZYevolve client
+    Server = server()
+    while True:
+        #receive the game info from the FUZZYevolve client
+        gameInfo = Server.receive()
+        with open('dataTesting.txt', 'a') as file:
+            file.write(gameInfo + "\n")
      
 if __name__ == '__main__':
 	#unittest.main()
-	Main()
+	#Main()
+    DataMine()
