@@ -38,7 +38,9 @@ def DataMine():
         gameInfo = Server.receive()
         with open('dataTesting.txt', 'a') as file:
             if(gameInfo != ""):
+                print(gameInfo)
                 file.write(gameInfo)
+        Server.send("OK")
      
 if __name__ == '__main__':
 	#unittest.main()

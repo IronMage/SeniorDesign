@@ -6,6 +6,11 @@ end
 
 -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
 function getGameInfo()
+    bPressed = joypad.getimmediate()
+    for key, value in pairs(bPressed) do
+        console.log(key, value)
+    end
+
     -- get marioX and marioY
     marioX = memory.read_s16_le(0x94)
     marioY = memory.read_s16_le(0x96)
@@ -51,13 +56,13 @@ function sendGameInfo(msg)
     client:send(msg .. '\n')
     local line, err = client:receive()
 
-    -- if there was no error
-    if not err then 
-        return line
-    else  -- if there was an error
-        console.writeline("Error in receiving from TCP server")
-        return "Error"
-    end
+    -- -- if there was no error
+    -- if not err then 
+    --     return line
+    -- else  -- if there was an error
+    --     console.writeline("Error in receiving from TCP server")
+    --     return "Error"
+    -- end
 end
 
 -- Gracefully handle unexpected exit
@@ -118,18 +123,14 @@ while true do
     -- initialize a new run
     setupRun()
     while true do
-        -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
+        -- -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
         message = getGameInfo()
-        -- check if Mario is no longer alive
-        if(marioX == 0 and marioY == 0) then
-            break -- break out of inner while loop if Mario is no longer alive
-        end
-        -- check if sprite display is desired
-        if forms.ischecked(showNetwork) then
-            displaySprites()
-        end
-        -- send the game info to the Fuzzy algorithm and get the response
-        msgReturned = sendGameInfo(message)
+        -- -- check if Mario is no longer alive
+        -- if(marioX == 0 and marioY == 0) then
+        --     break -- break out of inner while loop if Mario is no longer alive
+        -- end
+        -- -- send the game info to the Fuzzy algorithm and get the response
+        sendGameInfo(message)
         -- advance the screen frame
         emu.frameadvance();
         -- keep track of the number of frames advanced through
