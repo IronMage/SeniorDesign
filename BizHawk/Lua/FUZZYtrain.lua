@@ -6,6 +6,11 @@ end
 
 -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
 function getGameInfo()
+    bPressed = joypad.getimmediate()
+    for key, value in pairs(bPressed) do
+        console.log(key, value)
+    end
+
     -- get marioX and marioY
     marioX = memory.read_s16_le(0x94)
     marioY = memory.read_s16_le(0x96)
@@ -49,7 +54,7 @@ function sendGameInfo(msg)
     -- Message format will be MarioX, MarioY, number of enemies, x y pair for each enemy
     -- Message is comma delimited
     client:send(msg .. '\n')
-    -- local line, err = client:receive()
+    local line, err = client:receive()
 
     -- -- if there was no error
     -- if not err then 
