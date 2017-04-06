@@ -26,8 +26,8 @@ class Defuzzifier:
 
     def limitA(self, n1, n2):
         countAs = self.lastSelected.count("A") 
-        print(self.lastSelected)
-        print("Found " + str(countAs) + " A's") 
+        #print(self.lastSelected)
+        #print("Found " + str(countAs) + " A's") 
         if(countAs < (len(self.lastSelected) / 3)):
             return n1, n2
         elif(n1 == "A"):
