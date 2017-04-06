@@ -7,14 +7,41 @@ end
 -- get the game info from rom, returned message format = MarioX,MarioY,numEnemies,X,Y,X,Y,....
 function getGameInfo()
     bPressed = joypad.getimmediate()
-    for key, value in pairs(bPressed) do
-        console.log(key, value)
+    if (bPressed["P1 A"] == true) then
+        retMessage = "1"
+    else
+        retMessage = "0"
+    end
+    if (bPressed["P1 B"] == true) then
+        retMessage = retMessage .. ",1"
+    else
+        retMessage = retMessage .. ",0"
+    end
+    if (bPressed["P1 Up"] == true) then
+        retMessage = retMessage .. ",1"
+    else
+        retMessage = retMessage .. ",0"
+    end
+    if (bPressed["P1 Down"] == true) then
+        retMessage = retMessage .. ",1"
+    else
+        retMessage = retMessage .. ",0"
+    end
+    if (bPressed["P1 Left"] == true) then
+        retMessage = retMessage .. ",1"
+    else
+        retMessage = retMessage .. ",0"
+    end
+    if (bPressed["P1 Right"] == true) then
+        retMessage = retMessage .. ",1"
+    else
+        retMessage = retMessage .. ",0"
     end
 
     -- get marioX and marioY
     marioX = memory.read_s16_le(0x94)
     marioY = memory.read_s16_le(0x96)
-    retMessage = marioX .. ',' .. marioY
+    retMessage = retMessage .. ',' .. marioX .. ',' .. marioY
 
     -- get number of enemies
     sprites = {}
@@ -44,6 +71,7 @@ function getGameInfo()
         retMessage = retMessage .. ',' .. value["x"] .. ',' .. value["y"]
     end
 
+    -- console.writeline(retMessage)
     return retMessage
 end 
 
