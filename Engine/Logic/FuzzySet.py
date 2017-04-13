@@ -122,8 +122,8 @@ class BarGraph:
             #print("Adding to '" + str(value) + "' checking against '" + str(self.values[i]) + "'")
             if(value == self.values[i]):
                 self.valueOwnership[i] = self.valueOwnership[i] + amount
+                #print(self.valueOwnership)
                 return
-        #print(self.values)
         raise ValueError("The value '" + str(value) + "' was added to in BarGraph but not found")
     def resetOwnership(self):
         for i in range(self.numberOfValues):

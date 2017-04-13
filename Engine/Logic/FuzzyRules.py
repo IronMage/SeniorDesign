@@ -5,8 +5,8 @@ class FuzzyRule:
         self.function = ruleFunction
         self.inputs = requiredInputs
         self.outputs = requiredOutputs
-    def runRule(self, inputSets, outputSets):
-        return self.function(inputSets, outputSets)
+    def runRule(self, inputSets, outputSets, weights):
+        return self.function(inputSets, outputSets, weights)
     def checkRule(self, inputSets, outputSets):
         for s in self.inputs:
             if(inputSets.exists(s)):
@@ -22,10 +22,11 @@ class FuzzyRule:
         return self.function.__name__
 
 class FuzzyRuleSet:
-    def __init__(self, inputSets, outputSets):
+    def __init__(self, inputSets, outputSets, weights):
         self.rules = []
         self.inputs = inputSets
         self.outputs = outputSets
+        self.weights = weights
     def addRule(self, newRule):
         if(isinstance(newRule, FuzzyRule)):
             self.rules.append(newRule)
@@ -40,7 +41,7 @@ class FuzzyRuleSet:
         for x in range(len(self.rules)):
             names.append(self.rules[x].getName())
             self.rules[x].checkRule(self.inputs, self.outputs)
-            returnValues.append(self.rules[x].runRule(self.inputs, self.outputs))
+            returnValues.append(self.rules[x].runRule(self.inputs, self.outputs, self.weights))
         #print("RAN " + str(names))
         return returnValues
     def checkRules(self):
@@ -48,7 +49,7 @@ class FuzzyRuleSet:
             self.rules[x].checkRule(self.inputs, self.outputs)
 
 
-def testingRuleFunction(inputSets, outputSets):
+def testingRuleFunction(inputSets, outputSets, weights):
     #print("Entered testingRuleFunction")
     return True
 
@@ -84,15 +85,17 @@ class TestFuzzyRules(unittest.TestCase):
         inSet = testingInputSetCreation()                       #Get the actual testing set
         outSet = testingOutputSetCreation()
         r1.checkRule(inSet, outSet)                             #Check to make sure everything worked
+        weights = []
 
-        self.assertTrue(r1.runRule(inSet, outSet))
+        self.assertTrue(r1.runRule(inSet, outSet, weights))
 
     def testFuzzyRuleSet(self):       
         print("\nTESTING FUZZY RULES WRAPPER") 
         inSet = testingInputSetCreation()                       #Get the actual testing set
         outSet = testingOutputSetCreation()
+        weights = []
 
-        fzRules = FuzzyRuleSet(inSet, outSet)                        #Create a rule set
+        fzRules = FuzzyRuleSet(inSet, outSet, weights)                        #Create a rule set
 
         t123 = 18000                                            #Create a dummy variable to check the type checking for the rule set
         with self.assertRaises(ValueError):
@@ -103,7 +106,7 @@ class TestFuzzyRules(unittest.TestCase):
         fzRules.addRule(r1)
         self.assertEqual(r1, fzRules.getRules()[0])             #Make sure the rule and the first rule of the set are the same
 
-        self.assertEqual(fzRules.runRules()[0], r1.runRule(inSet, outSet))                                  #Make sure you can check and run the rules
+        self.assertEqual(fzRules.runRules()[0], r1.runRule(inSet, outSet, weights))                                  #Make sure you can check and run the rules
 
 
 
