@@ -270,7 +270,7 @@ while true do
         end
         -- send the game info to the Fuzzy algorithm and get the response
         msgReturned = sendGameInfo(message)
-        -- set the joypad to press the button returned by the algorithm
+        -- set the joypad to press the button returned by the fuzzy algorithm
         pushButton()
         -- advance the screen frame
         emu.frameadvance();
